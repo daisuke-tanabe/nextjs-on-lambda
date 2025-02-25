@@ -15,4 +15,5 @@ COPY --from=builder /app/.next/static ./.next/static
 COPY --from=builder /app/run.sh ./run.sh
 RUN ln -s /tmp/cache ./.next/cache
 
+RUN chmod +x ./run.sh
 CMD exec ./run.sh
