@@ -1,4 +1,9 @@
-# nextjs-on-lambda
+<div align="left">
+  <h1>nextjs-on-lambda</h1>
+  <picture>
+    <img src="https://github.com/user-attachments/assets/13989abd-3db7-4cb8-beee-7c1776032489" with="358" height="186" />
+  </picture>
+</div>
 
 ## 準備
 
