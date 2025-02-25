@@ -1,36 +1,42 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# nextjs-on-lambda
 
-## Getting Started
+## 準備
 
-First, run the development server:
+### AWS CLI
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+AWS CLIをインストールして`~/.aws/config`に追加する。
+
+```
+[profile daisuke-tanabe]
+sso_session=daisuke-tanabe
+sso_account_id={SSO_ACCOUNT_ID}
+sso_role_name=AdministratorAccess
+region={REGION}
+
+[sso-session daisuke-tanabe]
+sso_start_url={SSO_START_URL}
+sso_region={REGION}
+sso_registration_scopes=sso:account:access
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+### ECR
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+ECRリポジトリを作成してイメージをプッシュする
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+```
+// Dockerクライアントを認証する
+aws ecr get-login-password --profile ${SSO_PROFILE} --region {REGION} | docker login --username AWS --password-stdin {SSO_ACCOUNT_ID}.dkr.ecr.{REGION}.amazonaws.com
 
-## Learn More
+// Dockerイメージを構築する
+docker build -t daisuke-tanabe/nextjs-on-lambda .
 
-To learn more about Next.js, take a look at the following resources:
+// イメージにタグをつける
+docker tag daisuke-tanabe/nextjs-on-lambda:latest {SSO_ACCOUNT_ID}.dkr.ecr.{REGION}.amazonaws.com/daisuke-tanabe/nextjs-on-lambda:latest
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+// AWSにイメージをプッシュする
+docker push {REGION}.dkr.ecr.{REGION}.amazonaws.com/daisuke-tanabe/nextjs-on-lambda:latest
+```
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+### lambda
 
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+WIP
