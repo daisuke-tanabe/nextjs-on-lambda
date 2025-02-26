@@ -24,6 +24,25 @@ sso_region={REGION}
 sso_registration_scopes=sso:account:access
 ```
 
+### terraform
+
+```
+// インフラの適用
+terraform apply
+
+// 途中で失敗したらECRにDockerイメージをプッシュする
+
+// インフラ適用後にCloudfrontからLambdaを呼び出すため、LambdaにCloudfrontの権限を与える
+// Cloudfrontからも確認可能
+aws lambda --profile daisuke-tanabe add-permission \
+--statement-id "AllowCloudFrontServicePrincipal" \
+--action "lambda:InvokeFunctionUrl" \
+--principal "cloudfront.amazonaws.com" \
+--source-arn "arn:aws:cloudfront::{SSO_ACCOUNT_ID}:distribution/{DISTRIBUTION_ID}" \
+--region "{REGION}" \
+--function-name nextjs-on-lambda 
+```
+
 ### ECR
 
 ECRリポジトリを作成してイメージをプッシュする
@@ -41,7 +60,3 @@ docker tag daisuke-tanabe/nextjs-on-lambda:latest {SSO_ACCOUNT_ID}.dkr.ecr.{REGI
 // AWSにイメージをプッシュする
 docker push {REGION}.dkr.ecr.{REGION}.amazonaws.com/daisuke-tanabe/nextjs-on-lambda:latest
 ```
-
-### lambda
-
-WIP
